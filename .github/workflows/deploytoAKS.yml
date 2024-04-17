@@ -28,66 +28,34 @@ jobs:
         # SDK version to use. Examples: 2.2.104, 3.1, 3.1.x
         dotnet-version: 3.1.x
         # Optional package source for which to set up authentication. Will consult any existing NuGet.config in the root of the repo and provide a temporary NuGet.config using the NUGET_AUTH_TOKEN environment variable as a ClearTextPassword
-    - name: dotnet build
-      run: dotnet build -c release
     
     - name: docker build
-      run: docker  -t test-for-internship:'${{github.sha}}' 
-    
-     .
-     .
-     .
-     .
-     .
-     .
-     .
-     .
-     .
-     .
-     .
-     .
-     .
-     .
-     .
+      run: docker -t ${{secrets.REGISTRY_NAME}}.azurecr.io/tfi-arthur:'${{github.sha}}' 
 
- 
-    - name: Azure Kubernetes set context
-      uses: Azure/aks-set-context@v1
+    - uses: azure/login@v1
       with:
-        # Azure credentials i.e. output of `az ad sp create-for-rbac --sdk-auth`
-        creds: '${{secrets. ...... }}'
-        # Resource Group Name
-        resource-group: name-aks-rg
-        # AKS Cluster Name
-        cluster-name: name-aks-cluster
-
-  # Create K8s secrets to pull images
-    - name: Create secret in Kubernetes cluster
-      uses: Azure/k8s-create-secret@v1.1
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  
+    - uses: azure/aks-set-context@v3
       with:
-        # Container registry url
-        container-registry-url: .....
-        # Container registry username
-        container-registry-username: '${{secrets. ...... }}'
-        # Container registry password
-        container-registry-password:  '${{secrets.   ...... }}'
-        # Type of Kubernetes secret. For example, docker-registry or generic
-        secret-type: ........
-        # Name of the secret. You can use this secret name in the Kubernetes YAML configuration file.
-        secret-name: docker-image-pull-secret
+        resource-group: 'EUW'
+        cluster-name: 'TestCluster'
         
       # Deploy to k8s cluster
     - name: Deploy to Kubernetes cluster
       uses: Azure/k8s-deploy@v1
-      with:        
+      with:
+        namespace: workspace-arthur-1999
         # Path to the manifest files which will be used for deployment.
         manifests: |
           k8s/deployment.yml
           k8s/service.yml
         # Fully qualified resource URL of the image(s) to be used for substitutions on the manifest files Example: contosodemo.azurecr.io/helloworld:test
-        images: '${{secrets.   ...... }}/  .......  :${{github.sha}}'
+        images: '${{ secrets.REGISTRY_NAME }}.azurecr.io/tfi-arthur:${{github.sha}}'
         # Name of a docker-registry secret that has already been set up within the cluster. Each of these secret names are added under imagePullSecrets field for the workloads found in the input manifest files
-        imagepullsecrets: docker-image-pull-secret
+        # imagepullsecrets: docker-image-pull-secret
         # deploy/promote/reject
         action: deploy
         
