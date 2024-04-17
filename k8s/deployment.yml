@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
         - name: hello-world-container
-          image: devazregistry.azurecr.io/asp-hello-world-arthur:latest
+          image: devazregistry.azurecr.io/tfi-arthur:latest
           ports:
             - containerPort: 80
