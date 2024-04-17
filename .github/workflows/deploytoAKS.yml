@@ -37,15 +37,10 @@ jobs:
     
     - name: docker build
       run: docker build -t ${{secrets.REGISTRY_NAME}}.azurecr.io/tfi-arthur:'${{github.sha}}' .
-
-    - uses: azure/login@v1
-      with:
-        client-id: ${{ secrets.AZURE_CLIENT_ID }}
-        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
   
     - uses: azure/aks-set-context@v3
       with:
+        creds: '${{ secrets.AZURE_RBAC }}'
         resource-group: 'EUW'
         cluster-name: 'TestCluster'
         
