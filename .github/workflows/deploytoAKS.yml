@@ -32,7 +32,7 @@ jobs:
         # Optional package source for which to set up authentication. Will consult any existing NuGet.config in the root of the repo and provide a temporary NuGet.config using the NUGET_AUTH_TOKEN environment variable as a ClearTextPassword
     
     - name: docker build
-      run: docker -t ${{secrets.REGISTRY_NAME}}.azurecr.io/tfi-arthur:'${{github.sha}}' 
+      run: docker build -t ${{secrets.REGISTRY_NAME}}.azurecr.io/tfi-arthur:'${{github.sha}}' .
 
     - uses: azure/login@v1
       with:
